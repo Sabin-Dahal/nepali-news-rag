@@ -23,21 +23,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 
-# ──────────────────────────────────────────
-# CONFIG
-# ──────────────────────────────────────────
+
 MODEL_NAME  = "paraphrase-multilingual-mpnet-base-v2"
 OLLAMA_URL  = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "gemma3:4b"
 INDEX_FILE  = "data/faiss.index"
 MAP_FILE    = "data/chunk_map.json"
-TOP_K       = 5      # number of chunks to retrieve
-DEVICE      = "cpu" # change to "cpu" if needed
+TOP_K       = 3      
+DEVICE      = "cpu" 
 
 
-# ──────────────────────────────────────────
-# STARTUP — load everything once into memory
-# ──────────────────────────────────────────
+
 print("\n Loading models and index...")
 
 embed_model = SentenceTransformer(MODEL_NAME, device=DEVICE)
@@ -53,12 +49,9 @@ print(f"  Chunk map loaded ({len(chunk_map)} chunks)")
 print("  Ready.\n")
 
 
-# ──────────────────────────────────────────
-# FASTAPI APP
-# ──────────────────────────────────────────
+
 app = FastAPI(title="Nepali Knowledge Assistant", version="0.1.0")
 
-# Allow React frontend (Day 8) to call this API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:8000"],
@@ -95,7 +88,7 @@ def retrieve(question: str, k: int = TOP_K) -> list[dict]:
 
     results = []
     for score, idx in zip(scores[0], ids[0]):
-        if idx == -1:           # FAISS returns -1 if not enough vectors
+        if idx == -1:           
             continue
         chunk = chunk_map[idx]
         results.append({
@@ -131,7 +124,7 @@ def ask_ollama(prompt: str) -> str:
     payload = {
         "model":  OLLAMA_MODEL,
         "prompt": prompt,
-        "stream": False,        # get full response at once
+        "stream": False,        
     }
     try:
         response = requests.post(OLLAMA_URL, json=payload, timeout=60)

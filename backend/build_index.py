@@ -11,7 +11,7 @@ TOP_K       = 3
 
 
 def build_index(embeddings: np.ndarray):
-    dim   = embeddings.shape[1]          # 384
+    dim   = embeddings.shape[1]          
     index = faiss.IndexFlatIP(dim)      
     index.add(embeddings)
     return index
@@ -33,13 +33,13 @@ def search(index, chunk_map, query_vec, k=TOP_K):
 
 
 def main():
-    # ── Load embeddings ──
+    #  Load embeddings 
     if not os.path.exists(EMB_FILE):
         print(f"[ERROR] {EMB_FILE} not found.")
         print("  Run embeddings.py first (Day 5).")
         return
 
-    embeddings = np.load(EMB_FILE)          # shape: (N, 384)
+    embeddings = np.load(EMB_FILE)         
     print(f"\n Loaded embeddings: {embeddings.shape}")
 
     with open(MAP_FILE, "r", encoding="utf-8") as f:
@@ -62,7 +62,7 @@ def main():
         print(f"      title : {r['title'][:60]}")
         print(f"      text  : {r['chunk_text'][:100]}...")
 
-    # ── Summary ──
+    # Summary 
     print(f"\n{'─'*45}")
     print(f"  Vectors in index  : {index.ntotal}")
     print(f"  Dimensions        : {embeddings.shape[1]}")

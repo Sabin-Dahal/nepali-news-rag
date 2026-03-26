@@ -2,7 +2,6 @@ import json
 from playwright.sync_api import sync_playwright
 
 def scrape_entertainment_news(page):
-    #for entertainment news section
     try:
         print("Navigating to news page...")
         page.goto("https://ekantipur.com/news", wait_until="networkidle")
@@ -11,15 +10,12 @@ def scrape_entertainment_news(page):
         return []
 
     
-    # Wait for article cards to be present
     page.wait_for_selector("div.category-inner-wrapper")
 
-    # Scroll down to trigger lazy image loading
     try:
         page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
         page.wait_for_timeout(2000)
 
-        # Grab all article cards
         cards = page.query_selector_all("div.category-inner-wrapper")
         print(f"Found {len(cards)} article cards")
     except Exception as e:
@@ -31,7 +27,6 @@ def scrape_entertainment_news(page):
     category = category_el.text_content().strip()
     for card in cards[:5]: 
         try:
-            #grab title inside category-description h2->a tag
             url_el =  card.query_selector("div.category-description h2 a")
             url = url_el.get_attribute("href") if url_el else None
             print(url)
